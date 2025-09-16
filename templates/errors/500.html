@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block title %}{{ error_title }} - МЕТРИКС{% endblock %}
+
+{% block content %}
+<div class="error-page-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6 text-center">
+                <div class="error-content">
+                    <!-- Анимированная иконка -->
+                    <div class="error-icon mb-4">
+                        <i class="bi bi-exclamation-octagon-fill"></i>
+                    </div>
+                    
+                    <!-- Код ошибки -->
+                    <div class="error-code mb-3">
+                        <span class="error-number">{{ error_code }}</span>
+                    </div>
+                    
+                    <!-- Заголовок -->
+                    <h1 class="error-title mb-3">{{ error_title }}</h1>
+                    
+                    <!-- Сообщение -->
+                    <p class="error-message mb-4">{{ error_message }}</p>
+                    
+                    <!-- Описание -->
+                    <p class="error-description mb-5">{{ error_description }}</p>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="error-actions">
+                        <div class="row g-3 justify-content-center">
+                            <div class="col-auto">
+                                <button onclick="location.reload()" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-arrow-clockwise me-2"></i>
+                                    Обновить страницу
+                                </button>
+                            </div>
+                            <div class="col-auto">
+                                <a href="/" class="btn btn-outline-primary btn-lg">
+                                    <i class="bi bi-house me-2"></i>
+                                    На главную
+                                </a>
+                            </div>
+                            <div class="col-auto">
+                                <button onclick="history.back()" class="btn btn-outline-secondary btn-lg">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Назад
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Дополнительная информация -->
+                    <div class="error-info mt-5">
+                        <div class="alert alert-warning" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>Что делать:</strong> Попробуйте обновить страницу или вернуться позже. 
+                            Если проблема повторяется, обратитесь в службу поддержки.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #fff5f5 0%, #fed7d7 100%);
+}
+
+.error-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: #dc3545;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.error-code {
+    position: relative;
+}
+
+.error-number {
+    font-size: 6rem;
+    font-weight: 700;
+    color: #dc3545;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    line-height: 1;
+}
+
+.error-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    font-size: 1.25rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.error-description {
+    font-size: 1rem;
+    color: #868e96;
+    line-height: 1.6;
+}
+
+.error-actions .btn {
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.error-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.error-info {
+    border-top: 1px solid #e9ecef;
+    padding-top: 1.5rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .error-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .error-number {
+        font-size: 4rem;
+    }
+    
+    .error-title {
+        font-size: 1.5rem;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+    }
+    
+    .error-actions .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}

@@ -1,0 +1,137 @@
+/* Специальные стили для модальных окон на мобильных устройствах */
+/* Этот файл загружается после Bootstrap для переопределения стилей */
+
+/* Стили для планшетов и мобильных (768px и меньше) */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 0.5rem !important;
+        max-width: calc(100vw - 1rem) !important;
+        width: calc(100vw - 1rem) !important;
+    }
+    
+    .modal-dialog.modal-lg {
+        max-width: calc(100vw - 1rem) !important;
+        width: calc(100vw - 1rem) !important;
+    }
+    
+    .modal {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    
+    .modal-dialog-centered {
+        min-height: calc(100vh - 1rem) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+    
+    .modal-content {
+        border-radius: 15px !important;
+        margin: 0 !important;
+    }
+}
+
+/* Стили для маленьких мобильных (576px и меньше) */
+@media (max-width: 576px) {
+    .modal-dialog {
+        margin: 0.25rem !important;
+        max-width: calc(100vw - 0.5rem) !important;
+        width: calc(100vw - 0.5rem) !important;
+    }
+    
+    .modal-dialog.modal-lg {
+        max-width: calc(100vw - 0.5rem) !important;
+        width: calc(100vw - 0.5rem) !important;
+    }
+    
+    .modal {
+        padding-left: 0.25rem !important;
+        padding-right: 0.25rem !important;
+    }
+    
+    .modal-content {
+        border-radius: 12px !important;
+    }
+    
+    .modal-header {
+        padding: 1rem !important;
+    }
+    
+    .modal-body {
+        padding: 1rem !important;
+    }
+    
+    .modal-footer {
+        padding: 1rem !important;
+    }
+    
+    /* Улучшения для элементов управления количеством */
+    .quantity-controls {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 0.75rem !important;
+        margin: 0.5rem 0 !important;
+    }
+    
+    .quantity-btn {
+        min-width: 48px !important;
+        min-height: 48px !important;
+        font-size: 1.3rem !important;
+        border-radius: 10px !important;
+        border-width: 2px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        background: white !important;
+        border: 2px solid #dee2e6 !important;
+        color: #6c757d !important;
+        cursor: pointer !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .quantity-btn:hover {
+        background-color: #e6b800 !important;
+        border-color: #e6b800 !important;
+        color: white !important;
+        transform: scale(1.05) !important;
+    }
+    
+    .quantity-input {
+        min-width: 80px !important;
+        min-height: 48px !important;
+        font-size: 1.1rem !important;
+        text-align: center !important;
+        border-radius: 10px !important;
+        border-width: 2px !important;
+        border: 2px solid #dee2e6 !important;
+        background: white !important;
+        color: #495057 !important;
+        font-weight: 600 !important;
+    }
+    
+    .quantity-input:focus {
+        border-color: #e6b800 !important;
+        box-shadow: 0 0 0 0.2rem rgba(230, 184, 0, 0.25) !important;
+        outline: none !important;
+    }
+    
+    /* Кнопки в модальном окне */
+    .modal-footer .btn {
+        min-height: 44px !important;
+        font-size: 1rem !important;
+        padding: 0.75rem 1.5rem !important;
+    }
+    
+    /* Формы в модальном окне */
+    .modal-body .form-control {
+        min-height: 44px !important;
+        font-size: 1rem !important;
+    }
+    
+    .modal-body .form-label {
+        font-size: 1rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+}

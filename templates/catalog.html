@@ -1,0 +1,297 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог товаров - МЕТРИКС{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="display-4 text-center mb-5 fade-in">Каталог товаров</h1>
+            <p class="lead text-center text-muted mb-5 fade-in">Широкий ассортимент крепежных изделий для любых задач</p>
+        </div>
+    </div>
+
+    <!-- Search and Filter Section -->
+    <div class="row mb-5 fade-in">
+        <div class="col-12">
+            <div class="search-filter-section">
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" id="search-input" placeholder="Поиск товаров...">
+                            <button class="btn btn-outline-secondary border-start-0" type="button" id="clear-search" title="Очистить поиск">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <select class="form-select" id="sort-select">
+                            <option value="">Сортировка</option>
+                            <option value="name-asc">По названию (А-Я)</option>
+                            <option value="name-desc">По названию (Я-А)</option>
+                            <option value="category">По категории</option>
+                        </select>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <a href="/cart" class="btn btn-primary w-100">
+                            <i class="bi bi-cart3"></i> Корзина
+                            <span class="badge bg-light text-dark ms-1" id="cart-count">0</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="row mb-4 fade-in">
+        <div class="col-12">
+            <div class="d-flex flex-wrap gap-2" id="categories-container">
+                <!-- Categories will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="row" id="products-container">
+        <!-- Products will be loaded here -->
+    </div>
+
+    <!-- Hidden data for JavaScript -->
+    <script id="products-data" type="application/json" style="display: none;">
+        {{ products | tojson }}
+    </script>
+    <script id="categories-data" type="application/json" style="display: none;">
+        {{ categories | tojson }}
+    </script>
+</div>
+
+<!-- Request Modal -->
+<div class="modal fade" id="requestModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Оформить заявку</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="request-form">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Имя *</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email *</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone" class="form-label">Телефон *</label>
+                        <input type="tel" class="form-control" id="phone" name="phone" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Комментарий</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i>
+                        Минимальный заказ: 100 шт. Товары будут добавлены из корзины.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="submit" form="request-form" class="btn btn-primary">Отправить заявку</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Handle request form submission
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('request-form');
+    if (form) {
+        form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    console.log('Form submitted!');
+    
+    if (!window.app) {
+        console.error('window.app is not defined!');
+        alert('Ошибка: приложение не инициализировано. Перезагрузите страницу.');
+        return;
+    }
+    
+    if (!window.app.cart) {
+        console.error('window.app.cart is not defined!');
+        alert('Ошибка: корзина не инициализирована. Перезагрузите страницу.');
+        return;
+    }
+    
+    const totalQuantity = window.app.cart.reduce((sum, item) => sum + item.quantity, 0);
+    console.log('Total quantity:', totalQuantity);
+    console.log('Cart:', window.app.cart);
+    
+    if (totalQuantity < window.app.minOrderQuantity) {
+        alert(`Минимальный заказ составляет ${window.app.minOrderQuantity} штук. В вашей корзине: ${totalQuantity} штук.`);
+        return;
+    }
+    
+    const formData = new FormData(this);
+    const submitButton = document.querySelector('button[form="request-form"]');
+    const originalText = submitButton.innerHTML;
+    
+    // Add cart data to form
+    formData.append('items', JSON.stringify(window.app.cart));
+    formData.append('total_quantity', totalQuantity);
+    
+    // Show loading state
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Отправка...';
+    
+    try {
+        const response = await fetch('/api/submit-request', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Show success animation
+            showSuccessAnimation();
+            
+            // Clear cart
+            window.app.cart = [];
+            window.app.saveCart();
+            window.app.updateCartCount();
+            
+            // Reset form
+            this.reset();
+            
+            // Close modal after animation
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('requestModal'));
+                if (modal) modal.hide();
+            }, 2000);
+            
+        } else {
+            alert(result.message || 'Ошибка отправки заявки');
+        }
+    } catch (error) {
+        console.error('Request submission error:', error);
+        alert('Ошибка соединения. Попробуйте еще раз.');
+    } finally {
+        // Restore button state
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+    }
+        });
+    }
+});
+
+// Success animation function
+function showSuccessAnimation() {
+    // Create success overlay
+    const overlay = document.createElement('div');
+    overlay.id = 'success-overlay';
+    overlay.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 9999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    `;
+    
+    // Create success content
+    const successContent = document.createElement('div');
+    successContent.style.cssText = `
+        background: white;
+        padding: 40px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        transform: scale(0.8);
+        transition: transform 0.3s ease;
+    `;
+    
+    // Create checkmark SVG
+    const checkmark = document.createElement('div');
+    checkmark.innerHTML = `
+        <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom: 20px;">
+            <circle cx="40" cy="40" r="35" fill="#28a745" stroke="#28a745" stroke-width="2" 
+                    style="opacity: 0; animation: drawCircle 0.6s ease-in-out 0.3s forwards;">
+            </circle>
+            <path d="M25 40 L35 50 L55 30" stroke="white" stroke-width="4" fill="none" 
+                  stroke-linecap="round" stroke-linejoin="round"
+                  style="stroke-dasharray: 30; stroke-dashoffset: 30; animation: drawCheck 0.4s ease-in-out 0.9s forwards;">
+            </path>
+        </svg>
+    `;
+    
+    // Create thank you text
+    const thankYouText = document.createElement('div');
+    thankYouText.innerHTML = `
+        <h3 style="color: #28a745; margin: 0; font-weight: bold;">Спасибо за заказ!</h3>
+        <p style="color: #666; margin: 10px 0 0 0; font-size: 16px;">Мы свяжемся с вами в ближайшее время</p>
+    `;
+    
+    // Assemble the success content
+    successContent.appendChild(checkmark);
+    successContent.appendChild(thankYouText);
+    overlay.appendChild(successContent);
+    
+    // Add to page
+    document.body.appendChild(overlay);
+    
+    // Animate in
+    setTimeout(() => {
+        overlay.style.opacity = '1';
+        successContent.style.transform = 'scale(1)';
+    }, 100);
+    
+    // Add CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes drawCircle {
+            to {
+                opacity: 1;
+            }
+        }
+        
+        @keyframes drawCheck {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+    
+    // Remove after animation
+    setTimeout(() => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.parentNode.removeChild(overlay);
+            }
+            if (style.parentNode) {
+                style.parentNode.removeChild(style);
+            }
+        }, 300);
+    }, 2500);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  metriks:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - PYTHONPATH=/app
+    env_file:
+      - .env
+    volumes:
+      - ./static:/app/static
+      - ./templates:/app/templates
+      - ./store-7407308-202509021623.csv:/app/store-7407308-202509021623.csv
+      - ./orders.json:/app/orders.json
+      - ./hidden_products.json:/app/hidden_products.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/var/www/static
+    depends_on:
+      - metriks
+    restart: unless-stopped

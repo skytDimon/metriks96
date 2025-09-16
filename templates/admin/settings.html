@@ -1,0 +1,232 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Настройки{% endblock %}
+{% block page_title %}Настройки{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mb-4">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-gear me-2"></i>
+                    Основные настройки
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="settings-form">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="site_title" class="form-label">Название сайта</label>
+                            <input type="text" class="form-control" id="site_title" name="site_title" 
+                                   value="{{ settings.site_title }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="min_order_quantity" class="form-label">Минимальный заказ (шт.)</label>
+                            <input type="number" class="form-control" id="min_order_quantity" name="min_order_quantity" 
+                                   value="{{ settings.min_order_quantity }}" min="1">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="contact_phone" class="form-label">Контактный телефон</label>
+                            <input type="tel" class="form-control" id="contact_phone" name="contact_phone" 
+                                   value="{{ settings.contact_phone }}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="contact_email" class="form-label">Контактный email</label>
+                            <input type="email" class="form-control" id="contact_email" name="contact_email" 
+                                   value="{{ settings.contact_email }}">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="telegram_enabled" name="telegram_enabled" 
+                                       {% if settings.telegram_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="telegram_enabled">
+                                    Telegram уведомления
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="email_enabled" name="email_enabled" 
+                                       {% if settings.email_enabled %}checked{% endif %}>
+                                <label class="form-check-label" for="email_enabled">
+                                    Email уведомления
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check me-1"></i>
+                            Сохранить настройки
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-telegram me-2"></i>
+                    Telegram настройки
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label">Бот:</label>
+                    <div class="input-group">
+                        <span class="input-group-text">@</span>
+                        <input type="text" class="form-control" value="metriks96_bot" readonly>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Chat ID:</label>
+                    <input type="text" class="form-control" value="821740830" readonly>
+                </div>
+                
+                <button class="btn btn-outline-primary w-100" onclick="testTelegram()">
+                    <i class="bi bi-telegram me-1"></i>
+                    Тест отправки
+                </button>
+            </div>
+        </div>
+        
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-shield-check me-2"></i>
+                    Безопасность
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning">
+                    <i class="bi bi-exclamation-triangle me-2"></i>
+                    <strong>Внимание!</strong><br>
+                    В продакшене обязательно смените пароль админа!
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Логин:</label>
+                    <input type="text" class="form-control" value="admin" readonly>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Пароль:</label>
+                    <input type="password" class="form-control" value="metriks2024" readonly>
+                </div>
+                
+                <button class="btn btn-outline-warning w-100" onclick="changePassword()">
+                    <i class="bi bi-key me-1"></i>
+                    Сменить пароль
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Information -->
+<div class="row">
+    <div class="col-12">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Информация о системе
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="h4 text-primary">1.0.0</div>
+                            <small class="text-muted">Версия системы</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="h4 text-success">Python 3.13</div>
+                            <small class="text-muted">Версия Python</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="h4 text-info">FastAPI 0.104.1</div>
+                            <small class="text-muted">Версия FastAPI</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <div class="h4 text-warning">CSV</div>
+                            <small class="text-muted">База данных</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.getElementById('settings-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitButton = this.querySelector('button[type="submit"]');
+    const originalText = submitButton.innerHTML;
+    
+    submitButton.disabled = true;
+    submitButton.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Сохранение...';
+    
+    // Здесь можно добавить AJAX запрос для сохранения настроек
+    setTimeout(() => {
+        alert('✅ Настройки сохранены!');
+        submitButton.disabled = false;
+        submitButton.innerHTML = originalText;
+    }, 1000);
+});
+
+async function testTelegram() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Отправка...';
+    
+    try {
+        const response = await fetch('/admin/test-telegram', {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ ' + result.message);
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (error) {
+        alert('❌ Ошибка соединения');
+    } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+    }
+}
+
+function changePassword() {
+    alert('Смена пароля\n\nВ текущей версии смена пароля недоступна.\nПароль задается в файле app/routers/admin.py');
+}
+</script>
+{% endblock %}

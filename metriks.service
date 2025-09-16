@@ -1,0 +1,22 @@
+[Unit]
+Description=Metriks FastAPI Application
+After=network.target
+
+[Service]
+Type=exec
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/metriks
+Environment=PATH=/var/www/metriks/env/bin
+Environment=PYTHONPATH=/var/www/metriks
+ExecStart=/var/www/metriks/env/bin/gunicorn -c gunicorn.conf.py app.main:app
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=3
+
+# Ограничения ресурсов для слабого сервера
+MemoryLimit=800M
+CPUQuota=80%
+
+[Install]
+WantedBy=multi-user.target

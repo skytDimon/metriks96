@@ -1,0 +1,491 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if is_hidden_page %}Скрытые товары{% else %}Управление товарами{% endif %}{% endblock %}
+{% block page_title %}{% if is_hidden_page %}Скрытые товары{% else %}Управление товарами{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Навигация между обычными и скрытыми товарами -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="btn-group" role="group">
+            <a href="/admin/products" class="btn {% if not is_hidden_page %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                <i class="bi bi-eye me-1"></i>
+                Видимые товары
+            </a>
+            <a href="/admin/products/hidden" class="btn {% if is_hidden_page %}btn-warning{% else %}btn-outline-warning{% endif %}">
+                <i class="bi bi-eye-slash me-1"></i>
+                Скрытые товары
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card content-card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-box-seam me-2"></i>
+                    {% if is_hidden_page %}
+                        Список скрытых товаров ({{ products|length }})
+                    {% else %}
+                        Список товаров ({{ products|length }})
+                    {% endif %}
+                </h5>
+                <div>
+                    {% if not is_hidden_page %}
+                    <button class="btn btn-success btn-sm me-2" onclick="showAddProductModal()">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Добавить товар
+                    </button>
+                    {% endif %}
+                    <button class="btn btn-primary btn-sm" onclick="refreshProducts()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>
+                        Обновить
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if products %}
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Изображение</th>
+                                <th>Название</th>
+                                <th>Категория</th>
+                                <th>Бренд</th>
+                                <th>Артикул</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for product in products %}
+                            <tr>
+                                <td>
+                                    <code>{{ product.id }}</code>
+                                </td>
+                                <td>
+                                    {% if product.image and product.image.strip() %}
+                                    <img src="{{ product.image }}" alt="{{ product.name }}" 
+                                         style="width: 50px; height: 50px; object-fit: contain; border-radius: 5px;"
+                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    {% endif %}
+                                    <div class="bg-light d-flex align-items-center justify-content-center" 
+                                         style="width: 50px; height: 50px; border-radius: 5px; {% if product.image and product.image.strip() %}display: none;{% endif %}">
+                                        <i class="bi bi-image text-muted"></i>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold">{{ product.name }}</div>
+                                    {% if product.description %}
+                                    <small class="text-muted">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <span class="badge bg-secondary">{{ product.category }}</span>
+                                </td>
+                                <td>{{ product.brand or '-' }}</td>
+                                <td>
+                                    {% if product.sku %}
+                                    <code>{{ product.sku }}</code>
+                                    {% else %}
+                                    -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="/product/{{ product.id }}" target="_blank" class="btn btn-outline-primary">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                        <button class="btn btn-outline-info" onclick="editProduct('{{ product.id }}')">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        {% if is_hidden_page %}
+                                        <button class="btn btn-outline-success" onclick="showProduct('{{ product.id }}')" title="Показать товар">
+                                            <i class="bi bi-eye"></i>
+                                        </button>
+                                        {% else %}
+                                        <button class="btn btn-outline-warning" onclick="hideProduct('{{ product.id }}')" title="Скрыть товар">
+                                            <i class="bi bi-eye-slash"></i>
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-box-seam text-muted" style="font-size: 3rem;"></i>
+                    <h5 class="text-muted mt-3">Товары не найдены</h5>
+                    <p class="text-muted">Проверьте CSV файл с товарами</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Product Statistics -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-pie-chart me-2"></i>
+                    Статистика по категориям
+                </h5>
+            </div>
+            <div class="card-body">
+                {% set category_list = [] %}
+                {% for product in products %}
+                    {% if product.category and product.category.strip() %}
+                        {% set _ = category_list.append(product.category) %}
+                    {% endif %}
+                {% endfor %}
+                
+                {% if category_list %}
+                <div class="list-group list-group-flush">
+                    {% for category in category_list|unique %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        {{ category }}
+                        <span class="badge bg-primary rounded-pill">
+                            {{ category_list|select('equalto', category)|list|length }}
+                        </span>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-muted">Нет данных о категориях</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Информация о товарах
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Всего товаров:</strong></td>
+                        <td>{{ products|length }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>С изображениями:</strong></td>
+                        <td>
+                            {% set images_count = 0 %}
+                            {% for product in products %}
+                                {% if product.image and product.image.strip() %}
+                                    {% set images_count = images_count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ images_count }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>С описанием:</strong></td>
+                        <td>
+                            {% set desc_count = 0 %}
+                            {% for product in products %}
+                                {% if product.description and product.description.strip() %}
+                                    {% set desc_count = desc_count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ desc_count }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>С брендом:</strong></td>
+                        <td>
+                            {% set brand_count = 0 %}
+                            {% for product in products %}
+                                {% if product.brand and product.brand.strip() %}
+                                    {% set brand_count = brand_count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ brand_count }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>С артикулом:</strong></td>
+                        <td>
+                            {% set sku_count = 0 %}
+                            {% for product in products %}
+                                {% if product.sku and product.sku.strip() %}
+                                    {% set sku_count = sku_count + 1 %}
+                                {% endif %}
+                            {% endfor %}
+                            {{ sku_count }}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal для добавления товара -->
+<div class="modal fade" id="addProductModal" tabindex="-1" aria-labelledby="addProductModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProductModalLabel">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Добавить новый товар
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addProductForm" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="productName" class="form-label">Название товара *</label>
+                            <input type="text" class="form-control" id="productName" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="productCategory" class="form-label">Категория *</label>
+                            <input type="text" class="form-control" id="productCategory" name="category" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="productBrand" class="form-label">Бренд</label>
+                            <input type="text" class="form-control" id="productBrand" name="brand">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="productSku" class="form-label">Артикул (SKU)</label>
+                            <input type="text" class="form-control" id="productSku" name="sku">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="productDescription" class="form-label">Описание</label>
+                        <textarea class="form-control" id="productDescription" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="productImage" class="form-label">URL изображения</label>
+                        <input type="url" class="form-control" id="productImage" name="image" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="productMaterial" class="form-label">Материал</label>
+                            <input type="text" class="form-control" id="productMaterial" name="material">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="productApplication" class="form-label">Применение</label>
+                            <input type="text" class="form-control" id="productApplication" name="application">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="productStandard" class="form-label">Стандарт (Mark)</label>
+                            <input type="text" class="form-control" id="productStandard" name="standard">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="productAnalogs" class="form-label">Аналоги</label>
+                            <input type="text" class="form-control" id="productAnalogs" name="analogs">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="productWeight" class="form-label">Вес</label>
+                            <input type="number" step="0.01" class="form-control" id="productWeight" name="weight">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="productLength" class="form-label">Длина</label>
+                            <input type="number" step="0.01" class="form-control" id="productLength" name="length">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="productWidth" class="form-label">Ширина</label>
+                            <input type="number" step="0.01" class="form-control" id="productWidth" name="width">
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label for="productHeight" class="form-label">Высота</label>
+                            <input type="number" step="0.01" class="form-control" id="productHeight" name="height">
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="productDiameterLength" class="form-label">Диаметр/Длина (d/l)</label>
+                            <input type="text" class="form-control" id="productDiameterLength" name="diameter_length">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="productDrive" class="form-label">Привод</label>
+                            <input type="text" class="form-control" id="productDrive" name="drive">
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-plus-circle me-1"></i>
+                        Добавить товар
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+function refreshProducts() {
+    location.reload();
+}
+
+function editProduct(productId) {
+    alert('Редактирование товара ' + productId + '\n\nВ текущей версии редактирование товаров недоступно.\nТовары загружаются из CSV файла.');
+}
+
+async function hideProduct(productId) {
+    if (!confirm('Вы уверены, что хотите скрыть этот товар с сайта?\n\nТовар останется в CSV файле, но не будет отображаться в каталоге.')) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        
+        const response = await fetch('/admin/products/hide', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message);
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            showAlert('danger', result.message || 'Ошибка при скрытии товара');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Произошла ошибка при скрытии товара');
+    }
+}
+
+async function showProduct(productId) {
+    if (!confirm('Вы уверены, что хотите показать этот товар на сайте?')) {
+        return;
+    }
+    
+    try {
+        const formData = new FormData();
+        formData.append('product_id', productId);
+        
+        const response = await fetch('/admin/products/show', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            showAlert('success', result.message);
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            showAlert('danger', result.message || 'Ошибка при показе товара');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Произошла ошибка при показе товара');
+    }
+}
+
+function showAddProductModal() {
+    const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
+    modal.show();
+}
+
+// Обработка формы добавления товара
+document.getElementById('addProductForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    
+    // Показываем индикатор загрузки
+    submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Добавление...';
+    submitBtn.disabled = true;
+    
+    try {
+        const response = await fetch('/admin/products/add', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            // Показываем успешное сообщение
+            showAlert('success', 'Товар успешно добавлен!');
+            
+            // Закрываем модальное окно
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addProductModal'));
+            modal.hide();
+            
+            // Очищаем форму
+            this.reset();
+            
+            // Обновляем страницу через 1 секунду
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            showAlert('danger', result.message || 'Ошибка при добавлении товара');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showAlert('danger', 'Произошла ошибка при добавлении товара');
+    } finally {
+        // Восстанавливаем кнопку
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    }
+});
+
+function showAlert(type, message) {
+    // Создаем алерт
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    
+    // Добавляем в начало страницы
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Автоматически скрываем через 5 секунд
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

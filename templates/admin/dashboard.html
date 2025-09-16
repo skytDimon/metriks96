@@ -1,0 +1,234 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Дашборд{% endblock %}
+{% block page_title %}Дашборд{% endblock %}
+
+{% block content %}
+<!-- Stats Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="text-white-50 small">Всего товаров</div>
+                    <div class="h3 mb-0">{{ stats.total_products }}</div>
+                    <div class="small text-white-50">
+                        <i class="bi bi-eye me-1"></i>{{ stats.visible_products }} видимых
+                        <i class="bi bi-eye-slash ms-2 me-1"></i>{{ stats.hidden_products }} скрытых
+                    </div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="text-white-50 small">Всего заявок</div>
+                    <div class="h3 mb-0">{{ stats.total_orders }}</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="text-white-50 small">Общее количество</div>
+                    <div class="h3 mb-0">{{ stats.total_quantity }}</div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-hash"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="stats-card">
+            <div class="d-flex align-items-center">
+                <div class="flex-grow-1">
+                    <div class="text-white-50 small">Последняя заявка</div>
+                    <div class="h6 mb-0">
+                        {% if stats.last_order %}
+                            {{ stats.last_order.timestamp[:10] }}
+                        {% else %}
+                            Нет заявок
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="stats-icon">
+                    <i class="bi bi-clock-history"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-lightning me-2"></i>
+                    Быстрые действия
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <a href="/admin/products" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-box-seam me-2"></i>
+                            Управление товарами
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/admin/orders" class="btn btn-outline-success w-100">
+                            <i class="bi bi-cart-check me-2"></i>
+                            Просмотр заявок
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <button class="btn btn-outline-info w-100" onclick="testTelegram()">
+                            <i class="bi bi-telegram me-2"></i>
+                            Тест Telegram
+                        </button>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <a href="/admin/settings" class="btn btn-outline-warning w-100">
+                            <i class="bi bi-gear me-2"></i>
+                            Настройки
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- System Status -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-activity me-2"></i>
+                    Статус системы
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success rounded-circle p-2">
+                            <i class="bi bi-check-circle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold">Сервер</div>
+                        <small class="text-muted">Работает нормально</small>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="bg-success rounded-circle p-2">
+                            <i class="bi bi-check-circle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold">Telegram бот</div>
+                        <small class="text-muted">Подключен</small>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center mb-3">
+                    <div class="flex-shrink-0">
+                        <div class="bg-warning rounded-circle p-2">
+                            <i class="bi bi-exclamation-triangle text-white"></i>
+                        </div>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <div class="fw-bold">Email</div>
+                        <small class="text-muted">Требует настройки</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card content-card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="bi bi-info-circle me-2"></i>
+                    Информация о системе
+                </h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-sm">
+                    <tr>
+                        <td><strong>Версия:</strong></td>
+                        <td>1.0.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Python:</strong></td>
+                        <td>3.13</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FastAPI:</strong></td>
+                        <td>0.104.1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Telegram бот:</strong></td>
+                        <td>@metriks96_bot</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Минимальный заказ:</strong></td>
+                        <td>100 шт.</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+async function testTelegram() {
+    const button = event.target;
+    const originalText = button.innerHTML;
+    
+    button.disabled = true;
+    button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Отправка...';
+    
+    try {
+        const response = await fetch('/admin/test-telegram', {
+            method: 'POST'
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('✅ ' + result.message);
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (error) {
+        alert('❌ Ошибка соединения');
+    } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+    }
+}
+</script>
+{% endblock %}

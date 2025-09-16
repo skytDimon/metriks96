@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}{{ error_title }} - МЕТРИКС{% endblock %}
+
+{% block content %}
+<div class="error-page-container">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 col-xl-6 text-center">
+                <div class="error-content">
+                    <!-- Анимированная иконка -->
+                    <div class="error-icon mb-4">
+                        <i class="{{ error_icon }}"></i>
+                    </div>
+                    
+                    <!-- Код ошибки -->
+                    <div class="error-code mb-3">
+                        <span class="error-number">{{ error_code }}</span>
+                    </div>
+                    
+                    <!-- Заголовок -->
+                    <h1 class="error-title mb-3">{{ error_title }}</h1>
+                    
+                    <!-- Сообщение -->
+                    <p class="error-message mb-4">{{ error_message }}</p>
+                    
+                    <!-- Описание -->
+                    <p class="error-description mb-5">{{ error_description }}</p>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="error-actions">
+                        <div class="row g-3 justify-content-center">
+                            {% for action in error_actions %}
+                            <div class="col-auto">
+                                {% if action.type == 'link' %}
+                                <a href="{{ action.url }}" class="btn {{ action.class }}">
+                                    <i class="{{ action.icon }} me-2"></i>
+                                    {{ action.text }}
+                                </a>
+                                {% elif action.type == 'button' %}
+                                <button onclick="{{ action.onclick }}" class="btn {{ action.class }}">
+                                    <i class="{{ action.icon }} me-2"></i>
+                                    {{ action.text }}
+                                </button>
+                                {% endif %}
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Дополнительная информация -->
+                    {% if error_info %}
+                    <div class="error-info mt-5">
+                        <div class="alert {{ error_info.class }}" role="alert">
+                            <i class="{{ error_info.icon }} me-2"></i>
+                            <strong>{{ error_info.title }}:</strong> {{ error_info.text }}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.error-page-container {
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    background: {{ error_background }};
+}
+
+.error-content {
+    background: white;
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.error-icon {
+    font-size: 4rem;
+    color: {{ error_icon_color }};
+    animation: {{ error_animation }};
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% {
+        transform: translateY(0);
+    }
+    40% {
+        transform: translateY(-10px);
+    }
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.error-code {
+    position: relative;
+}
+
+.error-number {
+    font-size: 6rem;
+    font-weight: 700;
+    color: {{ error_code_color }};
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    line-height: 1;
+}
+
+.error-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 1rem;
+}
+
+.error-message {
+    font-size: 1.25rem;
+    color: #6c757d;
+    font-weight: 500;
+}
+
+.error-description {
+    font-size: 1rem;
+    color: #868e96;
+    line-height: 1.6;
+}
+
+.error-actions .btn {
+    border-radius: 50px;
+    padding: 0.75rem 2rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.error-actions .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.error-info {
+    border-top: 1px solid #e9ecef;
+    padding-top: 1.5rem;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .error-content {
+        padding: 2rem 1.5rem;
+    }
+    
+    .error-number {
+        font-size: 4rem;
+    }
+    
+    .error-title {
+        font-size: 1.5rem;
+    }
+    
+    .error-message {
+        font-size: 1.1rem;
+    }
+    
+    .error-actions .btn {
+        padding: 0.6rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}
+</style>
+{% endblock %}
