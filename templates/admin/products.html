@@ -370,9 +370,7 @@ function refreshProducts() {
     location.reload();
 }
 
-function editProduct(productId) {
-    alert('Редактирование товара ' + productId + '\n\nВ текущей версии редактирование товаров недоступно.\nТовары загружаются из CSV файла.');
-}
+// Функция editProduct определена ниже
 
 async function hideProduct(productId) {
     if (!confirm('Вы уверены, что хотите скрыть этот товар с сайта?\n\nТовар останется в CSV файле, но не будет отображаться в каталоге.')) {
