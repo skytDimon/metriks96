@@ -309,6 +309,13 @@ function renderRelatedProducts(products) {
                 <div class="card-body d-flex flex-column">
                     <h5 class="card-title">${product.name}</h5>
                     <p class="card-text text-muted flex-grow-1">${product.description || ''}</p>
+                    
+                    <div class="product-specs mb-3">
+                        ${product.brand ? `<div class="mb-1"><small class="text-dark"><strong>Бренд:</strong> ${product.brand}</small></div>` : ''}
+                        ${product.standard ? `<div class="mb-1"><small class="text-dark"><strong>Стандарт:</strong> ${product.standard}</small></div>` : ''}
+                        ${product.material ? `<div class="mb-1"><small class="text-dark"><strong>Материал:</strong> ${product.material}</small></div>` : ''}
+                    </div>
+                    
                     <div class="mt-auto">
                         <a href="/product/${product.id}" class="btn btn-outline-primary btn-sm">
                             Подробнее

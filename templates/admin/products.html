@@ -80,11 +80,26 @@
                                 <td>
                                     <div class="fw-bold">{{ product.name }}</div>
                                     {% if product.description %}
-                                    <small class="text-muted">{{ product.description[:100] }}{% if product.description|length > 100 %}...{% endif %}</small>
+                                    <small class="text-muted">{{ product.description[:80] }}{% if product.description|length > 80 %}...{% endif %}</small>
+                                    {% endif %}
+                                    {% if product.material %}
+                                    <div class="mt-1">
+                                        <small class="text-info"><strong>Материал:</strong> {{ product.material }}</small>
+                                    </div>
+                                    {% endif %}
+                                    {% if product.application %}
+                                    <div class="mt-1">
+                                        <small class="text-success"><strong>Применение:</strong> {{ product.application[:50] }}{% if product.application|length > 50 %}...{% endif %}</small>
+                                    </div>
                                     {% endif %}
                                 </td>
                                 <td>
                                     <span class="badge bg-secondary">{{ product.category }}</span>
+                                    {% if product.standard %}
+                                    <div class="mt-1">
+                                        <small class="text-warning"><strong>Стандарт:</strong> {{ product.standard }}</small>
+                                    </div>
+                                    {% endif %}
                                 </td>
                                 <td>{{ product.brand or '-' }}</td>
                                 <td>
@@ -92,6 +107,11 @@
                                     <code>{{ product.sku }}</code>
                                     {% else %}
                                     -
+                                    {% endif %}
+                                    {% if product.analogs %}
+                                    <div class="mt-1">
+                                        <small class="text-primary"><strong>Аналоги:</strong> {{ product.analogs[:30] }}{% if product.analogs|length > 30 %}...{% endif %}</small>
+                                    </div>
                                     {% endif %}
                                 </td>
                                 <td>
@@ -417,6 +437,11 @@ async function showProduct(productId) {
 function showAddProductModal() {
     const modal = new bootstrap.Modal(document.getElementById('addProductModal'));
     modal.show();
+}
+
+function editProduct(productId) {
+    // Перенаправляем на страницу редактирования
+    window.location.href = `/admin/products/edit/${productId}`;
 }
 
 // Обработка формы добавления товара

@@ -117,6 +117,10 @@ class App {
                         <div class="product-specs mb-3">
                             ${product.brand ? `<div class="mb-2"><small class="text-dark"><strong>Бренд:</strong> ${product.brand}</small></div>` : ''}
                             ${product.sku ? `<div class="mb-2"><small class="text-dark"><strong>Артикул:</strong> ${product.sku}</small></div>` : ''}
+                            ${product.standard ? `<div class="mb-2"><small class="text-dark"><strong>Стандарт:</strong> ${product.standard}</small></div>` : ''}
+                            ${product.material ? `<div class="mb-2"><small class="text-dark"><strong>Материал:</strong> ${product.material}</small></div>` : ''}
+                            ${product.application ? `<div class="mb-2"><small class="text-dark"><strong>Применение:</strong> ${product.application}</small></div>` : ''}
+                            ${product.analogs ? `<div class="mb-2"><small class="text-dark"><strong>Аналоги:</strong> ${product.analogs}</small></div>` : ''}
                         </div>
                         
                         <div class="mt-auto">

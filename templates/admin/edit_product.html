@@ -1,0 +1,280 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Редактирование товара{% endblock %}
+{% block page_title %}Редактирование товара{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">
+                        <i class="bi bi-pencil-square me-2"></i>Редактирование товара
+                    </h5>
+                    <a href="/admin/products" class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left me-1"></i>Назад к списку
+                    </a>
+                </div>
+                <div class="card-body">
+                    <form id="editProductForm" method="POST" action="/admin/products/update/{{ product.id }}">
+                        <div class="row">
+                            <!-- Основная информация -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-info-circle me-1"></i>Основная информация
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label for="name" class="form-label">Название товара *</label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           value="{{ product.name }}" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="category" class="form-label">Категория *</label>
+                                    <select class="form-select" id="category" name="category" required>
+                                        <option value="">Выберите категорию</option>
+                                        {% for cat in categories %}
+                                        <option value="{{ cat.id }}" 
+                                                {% if product.category == cat.id %}selected{% endif %}>
+                                            {{ cat.name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="brand" class="form-label">Бренд</label>
+                                    <input type="text" class="form-control" id="brand" name="brand" 
+                                           value="{{ product.brand or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="sku" class="form-label">Артикул (SKU)</label>
+                                    <input type="text" class="form-control" id="sku" name="sku" 
+                                           value="{{ product.sku or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="standard" class="form-label">Стандарт (Mark)</label>
+                                    <input type="text" class="form-control" id="standard" name="standard" 
+                                           value="{{ product.standard or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="image" class="form-label">URL изображения</label>
+                                    <input type="url" class="form-control" id="image" name="image" 
+                                           value="{{ product.image or '' }}">
+                                    {% if product.image %}
+                                    <div class="mt-2">
+                                        <img src="{{ product.image }}" alt="Текущее изображение" 
+                                             class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <!-- Характеристики -->
+                            <div class="col-md-6">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-gear me-1"></i>Характеристики
+                                </h6>
+                                
+                                <div class="mb-3">
+                                    <label for="material" class="form-label">Материал</label>
+                                    <input type="text" class="form-control" id="material" name="material" 
+                                           value="{{ product.material or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="application" class="form-label">Применение</label>
+                                    <textarea class="form-control" id="application" name="application" rows="3">{{ product.application or '' }}</textarea>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="analogs" class="form-label">Аналоги</label>
+                                    <input type="text" class="form-control" id="analogs" name="analogs" 
+                                           value="{{ product.analogs or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="diameter_length" class="form-label">Диаметр/Длина (d / l)</label>
+                                    <input type="text" class="form-control" id="diameter_length" name="diameter_length" 
+                                           value="{{ product.diameter_length or '' }}">
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="drive" class="form-label">Привод</label>
+                                    <input type="text" class="form-control" id="drive" name="drive" 
+                                           value="{{ product.drive or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Размеры -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-rulers me-1"></i>Размеры
+                                </h6>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="weight" class="form-label">Вес</label>
+                                    <input type="text" class="form-control" id="weight" name="weight" 
+                                           value="{{ product.weight or '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="length" class="form-label">Длина</label>
+                                    <input type="text" class="form-control" id="length" name="length" 
+                                           value="{{ product.length or '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="width" class="form-label">Ширина</label>
+                                    <input type="text" class="form-control" id="width" name="width" 
+                                           value="{{ product.width or '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label for="height" class="form-label">Высота</label>
+                                    <input type="text" class="form-control" id="height" name="height" 
+                                           value="{{ product.height or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Описание -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="bi bi-file-text me-1"></i>Описание
+                                </h6>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Описание товара</label>
+                                    <textarea class="form-control" id="description" name="description" rows="5">{{ product.description or '' }}</textarea>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Кнопки -->
+                        <div class="row mt-4">
+                            <div class="col-12">
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-check-lg me-1"></i>Сохранить изменения
+                                    </button>
+                                    <a href="/admin/products" class="btn btn-outline-secondary">
+                                        <i class="bi bi-x-lg me-1"></i>Отмена
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Модальное окно для подтверждения -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Подтверждение изменений</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Вы уверены, что хотите сохранить изменения в товаре?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                <button type="button" class="btn btn-primary" id="confirmSave">Сохранить</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editProductForm');
+    const confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+    const confirmSaveBtn = document.getElementById('confirmSave');
+    
+    // Обработка отправки формы
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        confirmModal.show();
+    });
+    
+    // Подтверждение сохранения
+    confirmSaveBtn.addEventListener('click', function() {
+        confirmModal.hide();
+        
+        // Показываем индикатор загрузки
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const originalText = submitBtn.innerHTML;
+        submitBtn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Сохранение...';
+        submitBtn.disabled = true;
+        
+        // Отправляем форму
+        const formData = new FormData(form);
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Показываем успешное сообщение
+                showAlert('success', data.message);
+                
+                // Перенаправляем на страницу товаров через 2 секунды
+                setTimeout(() => {
+                    window.location.href = '/admin/products';
+                }, 2000);
+            } else {
+                showAlert('danger', data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+            showAlert('danger', 'Произошла ошибка при сохранении товара');
+        })
+        .finally(() => {
+            // Восстанавливаем кнопку
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        });
+    });
+    
+    // Функция для показа уведомлений
+    function showAlert(type, message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        
+        // Вставляем уведомление в начало контента
+        const content = document.querySelector('.container-fluid');
+        content.insertBefore(alertDiv, content.firstChild);
+        
+        // Автоматически скрываем через 5 секунд
+        setTimeout(() => {
+            if (alertDiv.parentNode) {
+                alertDiv.remove();
+            }
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}

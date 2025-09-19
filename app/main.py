@@ -112,8 +112,10 @@ def load_hidden_products():
             with open(HIDDEN_PRODUCTS_FILE, 'r', encoding='utf-8') as file:
                 data = json.load(file)
                 hidden_products = set(data.get('hidden_products', []))
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Ошибка при загрузке скрытых товаров: {str(e)}")
+    else:
+        print(f"Файл {HIDDEN_PRODUCTS_FILE} не найден, создаем пустой список")
     return hidden_products
 
 def save_hidden_products(hidden_products):
@@ -122,7 +124,8 @@ def save_hidden_products(hidden_products):
         with open(HIDDEN_PRODUCTS_FILE, 'w', encoding='utf-8') as file:
             json.dump({'hidden_products': list(hidden_products)}, file, ensure_ascii=False, indent=2)
         return True
-    except Exception:
+    except Exception as e:
+        print(f"Ошибка при сохранении скрытых товаров: {str(e)}")
         return False
 
 def hide_product(product_id):
@@ -146,6 +149,58 @@ def get_hidden_products():
     """Получить только скрытые товары"""
     hidden_products = load_hidden_products()
     return [product for product in PRODUCTS if product['id'] in hidden_products]
+
+def get_product_by_id(product_id):
+    """Получить товар по ID"""
+    for product in PRODUCTS:
+        if product['id'] == product_id:
+            return product
+    return None
+
+def update_product_in_csv(product_id, updated_data):
+    """Обновить товар в CSV файле"""
+    csv_file = "store-7407308-202509021623.csv"
+    
+    if not os.path.exists(csv_file):
+        return False
+    
+    try:
+        # Читаем все данные из CSV
+        with open(csv_file, 'r', encoding='utf-8') as file:
+            reader = csv.DictReader(file, delimiter=';')
+            rows = list(reader)
+        
+        # Находим и обновляем нужную строку
+        updated = False
+        for row in rows:
+            if row.get('Tilda UID', '').strip() == product_id:
+                # Обновляем поля
+                for key, value in updated_data.items():
+                    if key in row:
+                        row[key] = value
+                updated = True
+                break
+        
+        if not updated:
+            return False
+        
+        # Записываем обновленные данные обратно в CSV
+        with open(csv_file, 'w', encoding='utf-8', newline='') as file:
+            if rows:
+                writer = csv.DictWriter(file, fieldnames=rows[0].keys(), delimiter=';')
+                writer.writeheader()
+                writer.writerows(rows)
+        
+        # Обновляем кэш товаров
+        global PRODUCTS, PRODUCTS_LOAD_TIME
+        PRODUCTS = load_products_from_csv()
+        PRODUCTS_LOAD_TIME = datetime.now()
+        
+        return True
+        
+    except Exception as e:
+        print(f"Ошибка при обновлении товара в CSV: {str(e)}")
+        return False
 
 # Categories for filtering (соответствуют категориям в CSV)
 CATEGORIES = [

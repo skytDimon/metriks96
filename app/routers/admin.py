@@ -237,7 +237,7 @@ async def hide_product(request: Request, admin: str = Depends(get_current_admin)
         else:
             return JSONResponse(
                 status_code=500,
-                content={"success": False, "message": "Ошибка при скрытии товара"}
+                content={"success": False, "message": "Ошибка при скрытии товара. Проверьте права доступа к файлу hidden_products.json"}
             )
     except Exception as e:
         return JSONResponse(
@@ -281,12 +281,126 @@ async def show_product(request: Request, admin: str = Depends(get_current_admin)
         else:
             return JSONResponse(
                 status_code=500,
-                content={"success": False, "message": "Ошибка при показе товара"}
+                content={"success": False, "message": "Ошибка при показе товара. Проверьте права доступа к файлу hidden_products.json"}
             )
     except Exception as e:
         return JSONResponse(
             status_code=500,
             content={"success": False, "message": f"Ошибка при показе товара: {str(e)}"}
+        )
+
+@router.get("/admin/products/edit/{product_id}", response_class=HTMLResponse)
+async def edit_product_page(request: Request, product_id: str, admin: str = Depends(get_current_admin)):
+    """Страница редактирования товара"""
+    try:
+        from app.main import get_product_by_id, CATEGORIES
+        
+        product = get_product_by_id(product_id)
+        if not product:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "Товар не найден"}
+            )
+        
+        return templates.TemplateResponse("admin/edit_product.html", {
+            "request": request,
+            "product": product,
+            "categories": CATEGORIES
+        })
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"Ошибка при загрузке страницы редактирования: {str(e)}"}
+        )
+
+@router.post("/admin/products/update/{product_id}")
+async def update_product(
+    request: Request,
+    product_id: str,
+    admin: str = Depends(get_current_admin),
+    name: str = Form(...),
+    category: str = Form(...),
+    brand: str = Form(""),
+    sku: str = Form(""),
+    description: str = Form(""),
+    image: str = Form(""),
+    material: str = Form(""),
+    application: str = Form(""),
+    standard: str = Form(""),
+    analogs: str = Form(""),
+    weight: str = Form(""),
+    length: str = Form(""),
+    width: str = Form(""),
+    height: str = Form(""),
+    diameter_length: str = Form(""),
+    drive: str = Form("")
+):
+    """Обновление товара в CSV файле"""
+    try:
+        from app.main import get_product_by_id, update_product_in_csv
+        
+        # Проверяем, что товар существует
+        product = get_product_by_id(product_id)
+        if not product:
+            return JSONResponse(
+                status_code=404,
+                content={"success": False, "message": "Товар не найден"}
+            )
+        
+        # Валидация обязательных полей
+        if not name.strip():
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Название товара обязательно"}
+            )
+        
+        if not category.strip():
+            return JSONResponse(
+                status_code=400,
+                content={"success": False, "message": "Категория товара обязательна"}
+            )
+        
+        # Подготавливаем данные для обновления
+        updated_data = {
+            "Brand": brand.strip(),
+            "SKU": sku.strip(),
+            "Mark": standard.strip(),
+            "Category": category.strip(),
+            "Title": name.strip(),
+            "Description": description.strip(),
+            "Text": description.strip(),
+            "Photo": image.strip(),
+            "Characteristics:Применение": application.strip(),
+            "Characteristics:Аналоги": analogs.strip(),
+            "Characteristics:Материал": material.strip(),
+            "Characteristics:d / l": diameter_length.strip(),
+            "Characteristics:Привод": drive.strip(),
+            "Weight": weight.strip(),
+            "Length": length.strip(),
+            "Width": width.strip(),
+            "Height": height.strip()
+        }
+        
+        # Обновляем товар в CSV
+        success = update_product_in_csv(product_id, updated_data)
+        if success:
+            return JSONResponse(
+                status_code=200,
+                content={
+                    "success": True, 
+                    "message": "Товар успешно обновлен"
+                }
+            )
+        else:
+            return JSONResponse(
+                status_code=500,
+                content={"success": False, "message": "Ошибка при обновлении товара"}
+            )
+            
+    except Exception as e:
+        return JSONResponse(
+            status_code=500,
+            content={"success": False, "message": f"Ошибка при обновлении товара: {str(e)}"}
         )
 
 @router.post("/admin/products/add")
