@@ -486,9 +486,7 @@ async def add_product(
         }
         
         # Добавляем товар в CSV файл
-        import os
-        BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-        csv_file = os.path.join(BASE_DIR, "store-7407308-202509021623.csv")
+        csv_file = "store-7407308-202509021623.csv"
         
         # Проверяем, существует ли файл
         file_exists = os.path.exists(csv_file)
@@ -581,9 +579,7 @@ def load_all_products():
 def load_orders():
     """Загрузка заявок (оптимизированная версия для продакшена)"""
     orders = []
-    import os
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    orders_file = os.path.join(BASE_DIR, "orders.json")
+    orders_file = "orders.json"
     
     if os.path.exists(orders_file):
         try:
@@ -624,9 +620,7 @@ def load_settings():
         "contact_email": "metriks66@bk.ru"
     }
     
-    import os
-    BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-    settings_file = os.path.join(BASE_DIR, "settings.json")
+    settings_file = "settings.json"
     if os.path.exists(settings_file):
         try:
             with open(settings_file, 'r', encoding='utf-8') as file:

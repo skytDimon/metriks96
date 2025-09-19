@@ -40,7 +40,7 @@ MIN_ORDER_QUANTITY = int(os.getenv("MIN_ORDER_QUANTITY", "100"))
 def load_products_from_csv():
     """Load products from CSV file (оптимизированная версия для слабых серверов)"""
     products = []
-    csv_file = os.path.join(BASE_DIR, "store-7407308-202509021623.csv")
+    csv_file = "store-7407308-202509021623.csv"
     
     if not os.path.exists(csv_file):
         return []
@@ -102,8 +102,7 @@ def force_refresh_products_cache():
     return PRODUCTS
 
 # Система скрытых товаров
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-HIDDEN_PRODUCTS_FILE = os.path.join(BASE_DIR, "hidden_products.json")
+HIDDEN_PRODUCTS_FILE = "hidden_products.json"
 
 def load_hidden_products():
     """Загрузка списка скрытых товаров"""
@@ -160,7 +159,7 @@ def get_product_by_id(product_id):
 
 def update_product_in_csv(product_id, updated_data):
     """Обновить товар в CSV файле"""
-    csv_file = os.path.join(BASE_DIR, "store-7407308-202509021623.csv")
+    csv_file = "store-7407308-202509021623.csv"
     
     if not os.path.exists(csv_file):
         return False
@@ -327,7 +326,7 @@ async def submit_request(
     }
     
     # Загружаем существующие заявки
-    orders_file = os.path.join(BASE_DIR, "orders.json")
+    orders_file = "orders.json"
     orders = []
     if os.path.exists(orders_file):
         try:

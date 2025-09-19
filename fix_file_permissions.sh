@@ -40,7 +40,7 @@ echo "Установка владельца файлов..."
 if [ -n "$1" ]; then
     USER="$1"
 else
-    USER="www-data"
+    USER="metriks66"
 fi
 
 echo "Установка владельца: $USER"
