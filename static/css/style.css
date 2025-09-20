@@ -206,6 +206,19 @@ body {
     text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
 }
 
+/* Стили для описания в hero-секции */
+.hero-description {
+    font-weight: 600 !important;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7) !important;
+}
+
+/* Стили для описания фасадного крепежа */
+.facade-description {
+    font-weight: 500 !important;
+    font-family: 'Georgia', 'Times New Roman', serif !important;
+    font-style: italic !important;
+}
+
 .hero-section .btn {
     transition: all 0.3s ease;
 }
@@ -251,22 +264,37 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 30px;
+    background: transparent;
+    border: none;
 }
 
 .catalog-image img {
     width: 120px;
     height: 120px;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 50%;
     transition: all 0.3s ease;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    transform: scale(1.3);
+    transform: scale(1.1);
+    background: transparent;
+    border: none;
 }
 
 .catalog-item:hover .catalog-image img {
     transform: scale(1.1);
     box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* Специальный стиль для картинки саморезов - увеличенный масштаб внутри круга */
+.catalog-image .screws-image {
+    object-fit: cover !important;
+    object-position: center !important;
+    transform: scale(1.2) !important;
+}
+
+.catalog-item:hover .catalog-image .screws-image {
+    transform: scale(1.1) !important;
 }
 
 /* Catalog Links */
