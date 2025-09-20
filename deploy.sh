@@ -94,7 +94,7 @@ read -p "Введите номер (1-4): " choice
 case $choice in
     1)
         echo "🐳 Запускаем через Docker Compose..."
-        docker-compose up -d
+        docker compose up -d
         echo "✅ Приложение запущено через Docker Compose"
         echo "🌐 Доступно по адресу: http://localhost"
         ;;
