@@ -50,6 +50,7 @@ class App {
                 
                 this.renderProducts();
                 this.renderCategories();
+                this.handleURLParams();
             })
             .catch(error => {
                 console.error('Error loading products:', error);
@@ -115,12 +116,41 @@ class App {
                         <p class="card-text flex-grow-1 text-muted mb-3">${product.description || ''}</p>
                         
                         <div class="product-specs mb-3">
-                            ${product.brand ? `<div class="mb-2"><small class="text-dark"><strong>Бренд:</strong> ${product.brand}</small></div>` : ''}
-                            ${product.sku ? `<div class="mb-2"><small class="text-dark"><strong>Артикул:</strong> ${product.sku}</small></div>` : ''}
-                            ${product.standard ? `<div class="mb-2"><small class="text-dark"><strong>Стандарт:</strong> ${product.standard}</small></div>` : ''}
-                            ${product.material ? `<div class="mb-2"><small class="text-dark"><strong>Материал:</strong> ${product.material}</small></div>` : ''}
-                            ${product.application ? `<div class="mb-2"><small class="text-dark"><strong>Применение:</strong> ${product.application}</small></div>` : ''}
-                            ${product.analogs ? `<div class="mb-2"><small class="text-dark"><strong>Аналоги:</strong> ${product.analogs}</small></div>` : ''}
+                            <!-- Desktop view - always visible -->
+                            <div class="d-none d-md-block">
+                                ${product.brand ? `<div class="mb-2"><small class="text-dark"><strong>Бренд:</strong> ${product.brand}</small></div>` : ''}
+                                ${product.sku ? `<div class="mb-2"><small class="text-dark"><strong>Артикул:</strong> ${product.sku}</small></div>` : ''}
+                                ${product.standard ? `<div class="mb-2"><small class="text-dark"><strong>Стандарт:</strong> ${product.standard}</small></div>` : ''}
+                                ${product.material ? `<div class="mb-2"><small class="text-dark"><strong>Материал:</strong> ${product.material}</small></div>` : ''}
+                                ${product.application ? `<div class="mb-2"><small class="text-dark"><strong>Применение:</strong> ${product.application}</small></div>` : ''}
+                                ${product.analogs ? `<div class="mb-2"><small class="text-dark"><strong>Аналоги:</strong> ${product.analogs}</small></div>` : ''}
+                            </div>
+                            
+                            <!-- Mobile/Tablet view - collapsible -->
+                            <div class="d-md-none">
+                                <div class="accordion accordion-flush" id="productSpecs${product.id}">
+                                    <div class="accordion-item">
+                                        <h2 class="accordion-header">
+                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#productSpecsCollapse${product.id}" aria-expanded="false" aria-controls="productSpecsCollapse${product.id}">
+                                                <i class="bi bi-gear-fill me-2"></i>
+                                                <small>Характеристики</small>
+                                            </button>
+                                        </h2>
+                                        <div id="productSpecsCollapse${product.id}" class="accordion-collapse collapse" aria-labelledby="productSpecsHeading${product.id}" data-bs-parent="#productSpecs${product.id}">
+                                            <div class="accordion-body p-2">
+                                                <div class="specs-list">
+                                                    ${product.brand ? `<div class="spec-item"><span class="spec-label">Бренд:</span><span class="spec-value">${product.brand}</span></div>` : ''}
+                                                    ${product.sku ? `<div class="spec-item"><span class="spec-label">Артикул:</span><span class="spec-value">${product.sku}</span></div>` : ''}
+                                                    ${product.standard ? `<div class="spec-item"><span class="spec-label">Стандарт:</span><span class="spec-value">${product.standard}</span></div>` : ''}
+                                                    ${product.material ? `<div class="spec-item"><span class="spec-label">Материал:</span><span class="spec-value">${product.material}</span></div>` : ''}
+                                                    ${product.application ? `<div class="spec-item"><span class="spec-label">Применение:</span><span class="spec-value">${product.application}</span></div>` : ''}
+                                                    ${product.analogs ? `<div class="spec-item"><span class="spec-label">Аналоги:</span><span class="spec-value">${product.analogs}</span></div>` : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         
                         <div class="mt-auto">
@@ -238,6 +268,25 @@ class App {
                 this.renderCategories();
             });
         });
+    }
+
+    handleURLParams() {
+        // Handle URL parameters for initial filtering
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get('category');
+        
+        if (category) {
+            // Check if category exists in our categories list
+            const categoryExists = this.categories.some(cat => cat.id === category);
+            if (categoryExists) {
+                this.currentCategory = category;
+                // Re-render after products and categories are loaded
+                setTimeout(() => {
+                    this.renderProducts();
+                    this.renderCategories();
+                }, 100);
+            }
+        }
     }
 
     bindClickableCardEvents() {
@@ -565,61 +614,7 @@ class App {
         });
     }
 
-    // Facade fastener section functionality
-    initializeFacadeFastener() {
-        const orderButton = document.querySelector('.facade-order-btn');
-        if (orderButton) {
-            orderButton.addEventListener('click', () => {
-                // Add a generic facade fastener product to cart
-                const productId = 'facade-fastener';
-                const productName = 'Фасадный крепёж нового поколения';
-                
-                const existingItem = this.cart.find(item => item.id === productId);
-                
-                if (existingItem) {
-                    existingItem.quantity += 1;
-                } else {
-                    this.cart.push({
-                        id: productId,
-                        name: productName,
-                        quantity: 1
-                    });
-                }
-                
-                this.saveCart();
-                this.updateCartCount();
-                
-                // Show success message
-                orderButton.textContent = 'Добавлено в корзину!';
-                orderButton.classList.remove('btn-primary');
-                orderButton.classList.add('btn-success');
-                
-                setTimeout(() => {
-                    orderButton.textContent = 'ЗАКАЗАТЬ ФАСАДНЫЙ КРЕПЁЖ';
-                    orderButton.classList.remove('btn-success');
-                    orderButton.classList.add('btn-primary');
-                }, 2000);
-            });
-        }
-
-        // Hotspot functionality
-        const boltDisplayContainer = document.querySelector('.bolt-display-container');
-        if (boltDisplayContainer) {
-            boltDisplayContainer.addEventListener('mouseenter', () => {
-                const hotspots = boltDisplayContainer.querySelectorAll('.hotspot');
-                hotspots.forEach(hotspot => {
-                    hotspot.style.opacity = '1';
-                });
-            });
-
-            boltDisplayContainer.addEventListener('mouseleave', () => {
-                const hotspots = boltDisplayContainer.querySelectorAll('.hotspot');
-                hotspots.forEach(hotspot => {
-                    hotspot.style.opacity = '0';
-                });
-            });
-        }
-    }
+    // Facade fastener section functionality removed - now it's just a link to catalog
 
     clearSearch() {
         this.searchQuery = '';
@@ -638,11 +633,7 @@ document.addEventListener('DOMContentLoaded', () => {
     window.app = new App();
     
     // Initialize facade fastener section if on homepage
-    if (window.location.pathname === '/') {
-        setTimeout(() => {
-            window.app.initializeFacadeFastener();
-        }, 100);
-    }
+    // Facade fastener initialization removed - now it's just a link to catalog
     
     // Initialize cart display if on cart page
     if (window.location.pathname === '/cart') {

@@ -87,37 +87,83 @@
                 <!-- Technical Specifications -->
                 <div class="mb-4">
                     <h5>Технические характеристики</h5>
-                    <div class="row">
-                        {% if product.standard %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Стандарт:</strong> {{ product.standard }}
+                    
+                    <!-- Desktop View - Always visible -->
+                    <div class="d-none d-md-block">
+                        <div class="row">
+                            {% if product.standard %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Стандарт:</strong> {{ product.standard }}
+                            </div>
+                            {% endif %}
+                            {% if product.brand %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Бренд:</strong> {{ product.brand }}
+                            </div>
+                            {% endif %}
+                            {% if product.sku %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Артикул:</strong> {{ product.sku }}
+                            </div>
+                            {% endif %}
+                            {% if product.material %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Материал:</strong> {{ product.material }}
+                            </div>
+                            {% endif %}
+                            {% if product.application %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Применение:</strong> {{ product.application }}
+                            </div>
+                            {% endif %}
+                            {% if product.analogs %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Аналоги:</strong> {{ product.analogs }}
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if product.brand %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Бренд:</strong> {{ product.brand }}
+                    </div>
+                    
+                    <!-- Mobile/Tablet View - Direct display -->
+                    <div class="d-md-none">
+                        <div class="specs-list">
+                            {% if product.standard %}
+                            <div class="spec-item">
+                                <span class="spec-label">Стандарт:</span>
+                                <span class="spec-value">{{ product.standard }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.brand %}
+                            <div class="spec-item">
+                                <span class="spec-label">Бренд:</span>
+                                <span class="spec-value">{{ product.brand }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.sku %}
+                            <div class="spec-item">
+                                <span class="spec-label">Артикул:</span>
+                                <span class="spec-value">{{ product.sku }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.material %}
+                            <div class="spec-item">
+                                <span class="spec-label">Материал:</span>
+                                <span class="spec-value">{{ product.material }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.application %}
+                            <div class="spec-item">
+                                <span class="spec-label">Применение:</span>
+                                <span class="spec-value">{{ product.application }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.analogs %}
+                            <div class="spec-item">
+                                <span class="spec-label">Аналоги:</span>
+                                <span class="spec-value">{{ product.analogs }}</span>
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if product.sku %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Артикул:</strong> {{ product.sku }}
-                        </div>
-                        {% endif %}
-                        {% if product.material %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Материал:</strong> {{ product.material }}
-                        </div>
-                        {% endif %}
-                        {% if product.application %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Применение:</strong> {{ product.application }}
-                        </div>
-                        {% endif %}
-                        {% if product.analogs %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Аналоги:</strong> {{ product.analogs }}
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
 
@@ -125,27 +171,61 @@
                 {% if product.drive or product.thread_diameter or product.bracket_length %}
                 <div class="mb-4">
                     <h5>Дополнительные параметры</h5>
-                    <div class="row">
-                        {% if product.drive %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Привод:</strong> {{ product.drive }}
+                    
+                    <!-- Desktop View - Always visible -->
+                    <div class="d-none d-md-block">
+                        <div class="row">
+                            {% if product.drive %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Привод:</strong> {{ product.drive }}
+                            </div>
+                            {% endif %}
+                            {% if product.thread_diameter %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Диаметр резьбы:</strong> {{ product.thread_diameter }}
+                            </div>
+                            {% endif %}
+                            {% if product.bracket_length %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Длина кронштейна:</strong> {{ product.bracket_length }}
+                            </div>
+                            {% endif %}
+                            {% if product.editions %}
+                            <div class="col-md-6 mb-2">
+                                <strong>Исполнения:</strong> {{ product.editions }}
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if product.thread_diameter %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Диаметр резьбы:</strong> {{ product.thread_diameter }}
+                    </div>
+                    
+                    <!-- Mobile/Tablet View - Direct display -->
+                    <div class="d-md-none">
+                        <div class="specs-list">
+                            {% if product.drive %}
+                            <div class="spec-item">
+                                <span class="spec-label">Привод:</span>
+                                <span class="spec-value">{{ product.drive }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.thread_diameter %}
+                            <div class="spec-item">
+                                <span class="spec-label">Диаметр резьбы:</span>
+                                <span class="spec-value">{{ product.thread_diameter }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.bracket_length %}
+                            <div class="spec-item">
+                                <span class="spec-label">Длина кронштейна:</span>
+                                <span class="spec-value">{{ product.bracket_length }}</span>
+                            </div>
+                            {% endif %}
+                            {% if product.editions %}
+                            <div class="spec-item">
+                                <span class="spec-label">Исполнения:</span>
+                                <span class="spec-value">{{ product.editions }}</span>
+                            </div>
+                            {% endif %}
                         </div>
-                        {% endif %}
-                        {% if product.bracket_length %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Длина кронштейна:</strong> {{ product.bracket_length }}
-                        </div>
-                        {% endif %}
-                        {% if product.editions %}
-                        <div class="col-md-6 mb-2">
-                            <strong>Исполнения:</strong> {{ product.editions }}
-                        </div>
-                        {% endif %}
                     </div>
                 </div>
                 {% endif %}
@@ -331,6 +411,26 @@ function renderRelatedProducts(products) {
 document.addEventListener('DOMContentLoaded', function() {
     updateCartCount();
     loadRelatedProducts();
+    initializeMobileSpecs();
 });
+
+// Initialize mobile specifications
+function initializeMobileSpecs() {
+    // Add touch-friendly interactions for mobile
+    if ('ontouchstart' in window) {
+        const specItems = document.querySelectorAll('.spec-item');
+        specItems.forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.backgroundColor = '#f8f9fa';
+            });
+            
+            item.addEventListener('touchend', function() {
+                setTimeout(() => {
+                    this.style.backgroundColor = '';
+                }, 150);
+            });
+        });
+    }
+}
 </script>
 {% endblock %}
