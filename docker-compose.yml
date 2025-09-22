@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   metriks:
     build: .
@@ -8,7 +6,7 @@ services:
     environment:
       - PYTHONPATH=/app
     env_file:
-      - .env
+      - env.production
     volumes:
       - ./static:/app/static
       - ./templates:/app/templates
@@ -42,10 +40,9 @@ services:
     volumes:
       - certbot_certs:/etc/letsencrypt
       - certbot_www:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email metriks66@bk.ru --agree-tos --no-eff-email -d metriks96.ru
+    command: certonly --webroot --webroot-path=/var/www/certbot --email admin@metriks96.ru --agree-tos --no-eff-email -d metriks96.ru -d www.metriks96.ru
     depends_on:
       - nginx
-
 volumes:
   certbot_certs:
   certbot_www:
