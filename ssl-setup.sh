@@ -3,19 +3,19 @@
 # Скрипт для настройки SSL сертификатов Let's Encrypt
 # Замените your-domain.com и your-email@example.com на ваши данные
 
-DOMAIN="your-domain.com"
-EMAIL="your-email@example.com"
+DOMAIN="metriks96.ru"
+EMAIL="metriks66@bk.ru"
 
 echo "🔐 Настройка SSL сертификатов для домена: $DOMAIN"
 echo "📧 Email: $EMAIL"
 
 # Проверяем, что домен указан
-if [ "$DOMAIN" = "your-domain.com" ]; then
+if [ "$DOMAIN" = "metriks961.ru" ]; then
     echo "❌ Ошибка: Замените your-domain.com на ваш реальный домен в файле ssl-setup.sh"
     exit 1
 fi
 
-if [ "$EMAIL" = "your-email@example.com" ]; then
+if [ "$EMAIL" = "metriks66@b1k.ru" ]; then
     echo "❌ Ошибка: Замените your-email@example.com на ваш реальный email в файле ssl-setup.sh"
     exit 1
 fi
@@ -68,7 +68,7 @@ echo "🚀 Запускаем контейнеры с временной кон�
 cp nginx.conf nginx-original.conf
 cp nginx-temp.conf nginx.conf
 
-docker-compose up -d
+docker compose up -d
 
 # Ждем запуска nginx
 echo "⏳ Ждем запуска nginx..."
